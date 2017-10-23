@@ -33,7 +33,7 @@ class Pymotify:
         raise PymotifyException('Have not found Web Helper port: check if Spotify is on? Try restarting it.')
 
     # general method for local calls to Web Helper
-    def _local_call(self, url, req_params={}):
+    def _local_call(self, uri, req_params={}):
         headers = dict(Origin='https://open.spotify.com')
         params = {
             'oauth': self.oauth_token,
@@ -42,7 +42,7 @@ class Pymotify:
         params.update(req_params)
 
         try:
-            res = self.session.get(Pymotify.URL.format(self.port, url), headers=headers, params=params)
+            res = self.session.get(Pymotify.URL.format(self.port, uri), headers=headers, params=params)
         except:
             raise PymotifyException('Connection failed')
 
@@ -74,11 +74,16 @@ class Pymotify:
     def unpause(self):
         return self._local_call('/remote/pause.json', req_params={'pause': 'false'})
 
+    # play 
+    def play(self, uri):
+        return self._local_call('/remote/play.json', req_params={'uri': uri, 'context': uri})
 
 if __name__ == '__main__':
     a = Pymotify()
 
-    # Pauses current spotify playback, waits 3s and then unpauses
+    # Plays Hot Chip's Flutes, sleeps 10s, pauses, waits 3s and then unpauses
+    a.play('spotify:track:65NKfdLTAnL8ubOho5jCXA')
+    sleep(10)
     a.pause()
     sleep(3)
     a.unpause()
